@@ -162,6 +162,7 @@ const App = ({ classes }) => {
         <Button
           type="submit"
           variant="contained"
+          color="primary"
           disabled={searchQuery.length < 1}
         >
           Search
@@ -170,12 +171,23 @@ const App = ({ classes }) => {
 
       {weather && (
         <Card className={classes.searchCard}>
-          <CardHeader>
-            {weather.name}, {weather.sys.country}
-          </CardHeader>
           <CardContent>
-            <p>{weather.main.temp}</p>
-            <p>{weather.weather[0].description}</p>
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="h2">
+                {weather.name}, {weather.sys.country}
+              </Typography>
+              <i
+                className={`wi wi-owm-${weather.weather[0].id} w-icon ${
+                  classes.w_icon
+                }`}
+              />
+              <Typography component="p">
+                {weather.weather[0].description}
+              </Typography>
+              <Typography variant="h5" component="h2">
+                {Math.round(weather.main.temp)} &#8451;
+              </Typography>
+            </CardContent>
           </CardContent>
           <CardActions>
             {!cityIds.includes(weather.id) && (
@@ -196,28 +208,37 @@ const App = ({ classes }) => {
         </div>
       )}
       {fetchingCities && <div>Fetching your cities...</div>}
-      {citiesData &&
-        citiesData.map(weather => (
-          <Card className={classes.searchCard}>
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="h2">
-                {weather.name}, {weather.sys.country}
-              </Typography>
-              <Typography component="p">
-                Current temperature: {weather.main.temp} &#8451;
-              </Typography>
-              <Typography component="p">
-                {weather.weather[0].description}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" onClick={() => removeCity(weather.id)}>
-                Remove
-              </Button>
-              size="small"
-            </CardActions>
-          </Card>
-        ))}
+      <Grid container spacing={16}>
+        {citiesData &&
+          citiesData.map(weather => (
+            <Grid item>
+              <Card className={classes.searchCard}>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {weather.name}, {weather.sys.country}
+                  </Typography>
+                  <i
+                    className={`wi wi-owm-${weather.weather[0].id} w-icon ${
+                      classes.w_icon
+                    }`}
+                  />
+                  <Typography component="p">
+                    {weather.weather[0].description}
+                  </Typography>
+                  <Typography variant="h5" component="h2">
+                    {Math.round(weather.main.temp)} &#8451;
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small" onClick={() => removeCity(weather.id)}>
+                    Remove
+                  </Button>
+                  size="small"
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+      </Grid>
     </div>
   );
 };
@@ -226,7 +247,8 @@ const styles = theme => ({
   form: {
     width: "50%",
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: `${theme.spacing.unit * 2}px`
   },
   formControl: {
     margin: theme.spacing.unit,
@@ -234,6 +256,10 @@ const styles = theme => ({
   },
   searchCard: {
     width: "250px"
+  },
+  w_icon: {
+    fontSize: "72px",
+    marginBottom: `${theme.spacing.unit * 2}px`
   }
 });
 
