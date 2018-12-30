@@ -1,4 +1,4 @@
-[
+export default [
   { Code: "AF", Name: "Afghanistan" },
   { Code: "AX", Name: "\u00c5land Islands" },
   { Code: "AL", Name: "Albania" },
