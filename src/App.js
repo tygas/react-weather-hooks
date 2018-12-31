@@ -18,10 +18,81 @@ import {
 import { withStyles } from "@material-ui/core/styles";
 import countryCodes from "./data/countries";
 
+const SearchForm = ({ classes, fetchWeather }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+
+  const onSearch = e => {
+    fetchWeather(e, searchQuery, countryCode);
+    setSearchQuery("");
+    setCountryCode("");
+  };
+
+  return (
+    <form className={classes.form} onSubmit={e => onSearch(e)}>
+      <FormControl>
+        <TextField
+          label="City"
+          name="city"
+          onChange={e => {
+            setSearchQuery(e.target.value);
+          }}
+          value={searchQuery}
+        />
+      </FormControl>
+
+      <FormControl className={classes.formControl}>
+        <InputLabel htmlFor="countries_select">Country (optional):</InputLabel>
+        <Select
+          native
+          value={countryCode}
+          inputProps={{
+            name: "countries_select",
+            id: "countries_select"
+          }}
+          onChange={e => setCountryCode(e.target.value)}
+        >
+          <option value="" />
+          {countryCodes.map(country => (
+            <option key={country.Code} value={country.Code}>
+              {country.Name}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
+
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        disabled={searchQuery.length < 1}
+      >
+        Search
+      </Button>
+    </form>
+  );
+};
+
+const formStyles = theme => ({
+  form: {
+    width: "50%",
+    display: "flex",
+    alignItems: "center",
+    marginBottom: `${theme.spacing.unit * 2}px`
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    minWidth: 120
+  },
+  searchCard: {
+    width: "250px"
+  }
+});
+
+const StyleWrappedSearchForm = withStyles(formStyles)(SearchForm);
+
 const App = ({ classes }) => {
   const [weather, setWeather] = useState(null);
-  const [countryCode, setCountryCode] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [cityIds, setCityIds] = useState([]);
   const [citiesData, setCitiesData] = useState([]);
   const [message, setMessage] = useState(null);
@@ -45,19 +116,17 @@ const App = ({ classes }) => {
     }
   };
 
-  const fetchWeather = async (e, city) => {
+  const fetchWeather = async (e, city, countryCode) => {
     try {
       e.preventDefault();
-      if (searchQuery) {
-        if (countryCode) city += `,${countryCode}`;
-        const { data } = await axios.get(
-          `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${
-            process.env.REACT_APP_OWM_KEY
-          }&units=metric`
-        );
-        console.log(data);
-        setWeather(data);
-      }
+      if (countryCode) city += `,${countryCode}`;
+      const { data } = await axios.get(
+        `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${
+          process.env.REACT_APP_OWM_KEY
+        }&units=metric`
+      );
+      console.log(data);
+      setWeather(data);
     } catch (e) {
       setMessage({ type: "error", message: "City not found." });
       return setInterval(() => setMessage(null), 5000);
@@ -86,14 +155,9 @@ const App = ({ classes }) => {
       console.log("ERROR HERE", citiesData);
       setCitiesData([...citiesData, weather]);
       setWeather(null);
-      setSearchQuery("");
       setMessage({ type: "success", message: "City added successfully." });
       return setInterval(() => setMessage(null), 5000);
     }
-  };
-
-  const onChangeCountry = e => {
-    setCountryCode(e.target.value);
   };
 
   const removeCity = id => {
@@ -121,53 +185,7 @@ const App = ({ classes }) => {
     <div>
       <br />
 
-      <form
-        className={classes.form}
-        onSubmit={e => fetchWeather(e, searchQuery)}
-      >
-        <FormControl>
-          {/* <label htmlFor="city">City:</label> */}
-          <TextField
-            label="City"
-            name="city"
-            onChange={e => {
-              setSearchQuery(e.target.value);
-            }}
-            value={searchQuery}
-          />
-        </FormControl>
-
-        <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="countries_select">
-            Country (optional):
-          </InputLabel>
-          <Select
-            native
-            value={countryCode}
-            inputProps={{
-              name: "countries_select",
-              id: "countries_select"
-            }}
-            onChange={e => onChangeCountry(e)}
-          >
-            <option value="" />
-            {countryCodes.map(country => (
-              <option key={country.Code} value={country.Code}>
-                {country.Name}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={searchQuery.length < 1}
-        >
-          Search
-        </Button>
-      </form>
+      <StyleWrappedSearchForm fetchWeather={fetchWeather} />
 
       {weather && (
         <Card className={classes.searchCard}>
