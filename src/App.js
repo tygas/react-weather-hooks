@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
 import axios from "axios";
@@ -99,24 +102,33 @@ const App = () => {
 
   return (
     <div>
+      <AppBar position="static" color="primary">
+        <Toolbar>
+          <Typography variant="h6" color="inherit">
+            Weather Board
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
       <br />
 
       <SearchForm fetchWeather={fetchWeather} />
 
       {weather && (
-        <WeatherCard weather={weather}>
-          <CardActions>
-            {!cityIds.includes(weather.id) && (
+        <div style={{ width: "300px", margin: "0 auto" }}>
+          <WeatherCard weather={weather}>
+            <CardActions>
               <Button
                 size="small"
                 color="primary"
                 onClick={() => onSaveCity(weather.id)}
+                disabled={cityIds.includes(weather.id)}
               >
                 Save
               </Button>
-            )}
-          </CardActions>
-        </WeatherCard>
+            </CardActions>
+          </WeatherCard>
+        </div>
       )}
       {message && (
         <div>

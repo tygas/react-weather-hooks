@@ -27,12 +27,12 @@ const WeatherCard = ({ weather, classes, children }) => {
 };
 
 const styles = theme => ({
-  weatherCard: {
-    width: "250px"
-  },
   w_icon: {
+    display: "flex",
+    justifyContent: "center",
+    color: theme.palette.primary.light,
     fontSize: "72px",
-    marginBottom: `${theme.spacing.unit * 2}px`
+    margin: `${theme.spacing.unit * 4}px`
   }
 });
 
