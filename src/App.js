@@ -1,97 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
-
 import axios from "axios";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  CardHeader,
-  Typography
-} from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import countryCodes from "./data/countries";
 
-const SearchForm = ({ classes, fetchWeather }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [countryCode, setCountryCode] = useState("");
+import SearchForm from "./components/SearchForm";
+import WeatherCard from "./components/WeatherCard";
+import WeatherGrid from "./components/WeatherGrid";
 
-  const onSearch = e => {
-    fetchWeather(e, searchQuery, countryCode);
-    setSearchQuery("");
-    setCountryCode("");
-  };
-
-  return (
-    <form className={classes.form} onSubmit={e => onSearch(e)}>
-      <FormControl>
-        <TextField
-          label="City"
-          name="city"
-          onChange={e => {
-            setSearchQuery(e.target.value);
-          }}
-          value={searchQuery}
-        />
-      </FormControl>
-
-      <FormControl className={classes.formControl}>
-        <InputLabel htmlFor="countries_select">Country (optional):</InputLabel>
-        <Select
-          native
-          value={countryCode}
-          inputProps={{
-            name: "countries_select",
-            id: "countries_select"
-          }}
-          onChange={e => setCountryCode(e.target.value)}
-        >
-          <option value="" />
-          {countryCodes.map(country => (
-            <option key={country.Code} value={country.Code}>
-              {country.Name}
-            </option>
-          ))}
-        </Select>
-      </FormControl>
-
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={searchQuery.length < 1}
-      >
-        Search
-      </Button>
-    </form>
-  );
-};
-
-const formStyles = theme => ({
-  form: {
-    width: "50%",
-    display: "flex",
-    alignItems: "center",
-    marginBottom: `${theme.spacing.unit * 2}px`
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120
-  },
-  searchCard: {
-    width: "250px"
-  }
-});
-
-const StyleWrappedSearchForm = withStyles(formStyles)(SearchForm);
-
-const App = ({ classes }) => {
+const App = () => {
   const [weather, setWeather] = useState(null);
   const [cityIds, setCityIds] = useState([]);
   const [citiesData, setCitiesData] = useState([]);
@@ -152,7 +68,7 @@ const App = ({ classes }) => {
     if (!cityStorageArr.includes(id)) {
       cityArr = cityStorageArr.push(id);
       localStorage.setItem("cityStorage", JSON.stringify(cityStorageArr));
-      console.log("ERROR HERE", citiesData);
+      console.log(citiesData);
       setCitiesData([...citiesData, weather]);
       setWeather(null);
       setMessage({ type: "success", message: "City added successfully." });
@@ -185,28 +101,10 @@ const App = ({ classes }) => {
     <div>
       <br />
 
-      <StyleWrappedSearchForm fetchWeather={fetchWeather} />
+      <SearchForm fetchWeather={fetchWeather} />
 
       {weather && (
-        <Card className={classes.searchCard}>
-          <CardContent>
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="h2">
-                {weather.name}, {weather.sys.country}
-              </Typography>
-              <i
-                className={`wi wi-owm-${weather.weather[0].id} w-icon ${
-                  classes.w_icon
-                }`}
-              />
-              <Typography component="p">
-                {weather.weather[0].description}
-              </Typography>
-              <Typography variant="h5" component="h2">
-                {Math.round(weather.main.temp)} &#8451;
-              </Typography>
-            </CardContent>
-          </CardContent>
+        <WeatherCard weather={weather}>
           <CardActions>
             {!cityIds.includes(weather.id) && (
               <Button
@@ -218,7 +116,7 @@ const App = ({ classes }) => {
               </Button>
             )}
           </CardActions>
-        </Card>
+        </WeatherCard>
       )}
       {message && (
         <div>
@@ -226,59 +124,9 @@ const App = ({ classes }) => {
         </div>
       )}
       {fetchingCities && <div>Fetching your cities...</div>}
-      <Grid container spacing={16}>
-        {citiesData &&
-          citiesData.map(weather => (
-            <Grid item>
-              <Card className={classes.searchCard}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {weather.name}, {weather.sys.country}
-                  </Typography>
-                  <i
-                    className={`wi wi-owm-${weather.weather[0].id} w-icon ${
-                      classes.w_icon
-                    }`}
-                  />
-                  <Typography component="p">
-                    {weather.weather[0].description}
-                  </Typography>
-                  <Typography variant="h5" component="h2">
-                    {Math.round(weather.main.temp)} &#8451;
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small" onClick={() => removeCity(weather.id)}>
-                    Remove
-                  </Button>
-                  size="small"
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-      </Grid>
+      <WeatherGrid citiesData={citiesData} removeCity={removeCity} />
     </div>
   );
 };
 
-const styles = theme => ({
-  form: {
-    width: "50%",
-    display: "flex",
-    alignItems: "center",
-    marginBottom: `${theme.spacing.unit * 2}px`
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120
-  },
-  searchCard: {
-    width: "250px"
-  },
-  w_icon: {
-    fontSize: "72px",
-    marginBottom: `${theme.spacing.unit * 2}px`
-  }
-});
-
-export default withStyles(styles)(App);
+export default App;
