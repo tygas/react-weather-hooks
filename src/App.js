@@ -12,7 +12,7 @@ import WeatherGrid from "./components/WeatherGrid";
 
 const App = () => {
   const [weather, setWeather] = useState(null);
-  const [cityIds, setCityIds] = useState([]);
+  const [savedCityIds, setSavedCityIds] = useState([]);
   const [citiesData, setCitiesData] = useState([]);
   const [message, setMessage] = useState(null);
   const [fetchingCities, setFetchingCities] = useState(true);
@@ -22,12 +22,9 @@ const App = () => {
     const queryArr = cityStorage ? JSON.parse(cityStorage) : [];
     if (queryArr.length) {
       const { data } = await axios.get(
-        `http://api.openweathermap.org/data/2.5/group?id=${queryArr.join(
-          ","
-        )}&units=metric&appid=${process.env.REACT_APP_OWM_KEY}`
+        `/api/forward/list?list=${queryArr.join(",")}`
       );
-      console.log(data);
-      setCityIds([...queryArr]);
+      setSavedCityIds([...queryArr]);
       setCitiesData([...data.list]);
       setFetchingCities(false);
     } else {
@@ -39,12 +36,7 @@ const App = () => {
     try {
       e.preventDefault();
       if (countryCode) city += `,${countryCode}`;
-      const { data } = await axios.get(
-        `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${
-          process.env.REACT_APP_OWM_KEY
-        }&units=metric`
-      );
-      console.log(data);
+      const { data } = await axios.get(`/api/forward/location?q=${city}`);
       setWeather(data);
     } catch (e) {
       setMessage({ type: "error", message: "City not found." });
@@ -71,7 +63,6 @@ const App = () => {
     if (!cityStorageArr.includes(id)) {
       cityArr = cityStorageArr.push(id);
       localStorage.setItem("cityStorage", JSON.stringify(cityStorageArr));
-      console.log(citiesData);
       setCitiesData([...citiesData, weather]);
       setWeather(null);
       setMessage({ type: "success", message: "City added successfully." });
@@ -80,13 +71,13 @@ const App = () => {
   };
 
   const removeCity = id => {
-    console.log(id);
     const filteredStorage = JSON.parse(
       localStorage.getItem("cityStorage")
     ).filter(cityId => cityId !== id);
-    console.log(filteredStorage);
+
     localStorage.setItem("cityStorage", JSON.stringify(filteredStorage));
     const updatedCities = citiesData.filter(city => city.id !== id);
+
     setCitiesData(updatedCities);
     setMessage({ type: "success", message: "Successfully removed city." });
     return setInterval(() => setMessage(null), 5000);
@@ -105,7 +96,7 @@ const App = () => {
       <AppBar position="static" color="primary">
         <Toolbar>
           <Typography variant="h6" color="inherit">
-            Weather Board
+            React Weather
           </Typography>
         </Toolbar>
       </AppBar>
@@ -122,7 +113,7 @@ const App = () => {
                 size="small"
                 color="primary"
                 onClick={() => onSaveCity(weather.id)}
-                disabled={cityIds.includes(weather.id)}
+                disabled={savedCityIds.includes(weather.id)}
               >
                 Save
               </Button>
