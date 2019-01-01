@@ -17,41 +17,46 @@ const App = () => {
   const [message, setMessage] = useState(null);
   const [fetchingCities, setFetchingCities] = useState(true);
 
+  // Fetches cities that were saved to local storage previously
   const fetchSavedCities = async () => {
-    const cityStorage = localStorage.getItem("cityStorage");
-    const queryArr = cityStorage ? JSON.parse(cityStorage) : [];
+    const cityStorage = localStorage.getItem("cityStorage"); // Get saved city ids from local storage
+    const queryArr = cityStorage ? JSON.parse(cityStorage) : []; // Parse string to get array
     if (queryArr.length) {
       const { data } = await axios.get(
         `/api/forward/list?list=${queryArr.join(",")}`
       );
-      setSavedCityIds([...queryArr]);
-      setCitiesData([...data.list]);
+      setSavedCityIds([...queryArr]); // Set state to track city ids
+      setCitiesData([...data.list]); // Set all cities for WeatherGrid
       setFetchingCities(false);
     } else {
       setFetchingCities(false);
     }
   };
 
+  // Fetches weather from a search
   const fetchWeather = async (e, city, countryCode) => {
     try {
       e.preventDefault();
-      if (countryCode) city += `,${countryCode}`;
-      const { data } = await axios.get(`/api/forward/location?q=${city}`);
-      setWeather(data);
+      if (countryCode) city += `,${countryCode}`; // Add country to query if selected
+      const { data } = await axios.get(`/api/forward/location?q=${city}`); // Server forwards get request to OWM API
+      setWeather(data); //
     } catch (e) {
       setMessage({ type: "error", message: "City not found." });
       return setInterval(() => setMessage(null), 5000);
     }
   };
 
+  // Save city to local storage, updates displayed weather locations
   const onSaveCity = id => {
-    const cityStorage = localStorage.getItem("cityStorage");
     let cityArr;
+    const cityStorage = localStorage.getItem("cityStorage");
+    // If no saved cities, save new city and return
     if (!cityStorage) {
       cityArr = [id];
       return localStorage.setItem("cityStorage", JSON.stringify(cityArr));
     }
-    const cityStorageArr = JSON.parse(cityStorage);
+    const cityStorageArr = JSON.parse(cityStorage); // Parse string containing city ids to array
+    // OWM limit of 20 locations in a request
     if (cityStorageArr.length >= 20) {
       setMessage({
         type: "error",
@@ -60,9 +65,11 @@ const App = () => {
       });
       return setInterval(() => setMessage(null), 5000);
     }
+    // If city not already stored, adds it
     if (!cityStorageArr.includes(id)) {
-      cityArr = cityStorageArr.push(id);
-      localStorage.setItem("cityStorage", JSON.stringify(cityStorageArr));
+      cityArr = cityStorageArr.push(id); // Add to array
+      localStorage.setItem("cityStorage", JSON.stringify(cityStorageArr)); // Stringify and save to local storage
+      // State updates
       setCitiesData([...citiesData, weather]);
       setWeather(null);
       setMessage({ type: "success", message: "City added successfully." });
@@ -70,15 +77,17 @@ const App = () => {
     }
   };
 
+  // Removes city from local storage and from currently displayed cities
   const removeCity = id => {
     const filteredStorage = JSON.parse(
       localStorage.getItem("cityStorage")
-    ).filter(cityId => cityId !== id);
+    ).filter(cityId => cityId !== id); // Parsed saved cities string to array and filter out removed city
 
-    localStorage.setItem("cityStorage", JSON.stringify(filteredStorage));
-    const updatedCities = citiesData.filter(city => city.id !== id);
+    localStorage.setItem("cityStorage", JSON.stringify(filteredStorage)); // Stringify filtered array and save
 
-    setCitiesData(updatedCities);
+    const updatedCities = citiesData.filter(city => city.id !== id); // Filter from state
+    setCitiesData(updatedCities); // Update state
+
     setMessage({ type: "success", message: "Successfully removed city." });
     return setInterval(() => setMessage(null), 5000);
   };
