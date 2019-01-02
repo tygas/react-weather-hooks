@@ -8,12 +8,7 @@ import WeatherCard from "./WeatherCard";
 
 const WeatherGrid = ({ citiesData, removeCity, classes }) => {
   return (
-    <Grid
-      container
-      justify="space-evenly"
-      spacing={16}
-      className={classes.grid}
-    >
+    <Grid container justify="flex-start" spacing={16} className={classes.grid}>
       {citiesData &&
         citiesData.map(weather => (
           <Grid xs={12} sm={6} md={4} lg={3} xl={2} key={weather.id} item>

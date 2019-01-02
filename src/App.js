@@ -92,13 +92,10 @@ const App = () => {
     return setInterval(() => setMessage(null), 5000);
   };
 
-  useEffect(
-    () => {
-      fetchSavedCities();
-      return () => clearInterval();
-    },
-    [fetchingCities]
-  );
+  useEffect(() => {
+    fetchSavedCities();
+    return () => clearInterval();
+  }, []);
 
   return (
     <div>
