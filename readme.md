@@ -2,7 +2,7 @@
 
 ### [Link To Live Deployment on Heroku](https://react-weather-hooks.herokuapp.com/)
 
-A simple react weather app that saves up to 20 locations.
+A simple react weather app that saves up to 20 locations. Styled with Material-Ui library.
 
 Uses the Open Weather Map API. Locations are saved in local storage.
 
@@ -14,7 +14,7 @@ The requests to Open Weather Map's API is done through the server (for good prac
 
 - git clone `git@github.com:samokasha/react-weather-hooks.git`
 
-- Export OWM_KEY="YOUR_API_KEY" in `config/dev.js`.
+- Export object with key/value `OWM_KEY:"YOUR_API_KEY"` in `config/dev.js`.
 
 - `npm run dev to run` in development.
 

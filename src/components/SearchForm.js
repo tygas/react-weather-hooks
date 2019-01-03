@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
+import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
@@ -26,6 +27,9 @@ const SearchForm = ({ classes, fetchWeather }) => {
         <Avatar className={classes.avatar}>
           <i className={`wi wi-sunrise ${classes.w_icon}`} />
         </Avatar>
+        <Typography className={classes.searchTitle} variant="title">
+          Search
+        </Typography>
         <FormControl className={classes.formControl}>
           <TextField
             label="City"
@@ -83,7 +87,7 @@ const styles = theme => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: `${theme.spacing.unit}px`,
+    padding: `${theme.spacing.unit * 3}px ${theme.spacing.unit}px`,
     marginBottom: `${theme.spacing.unit * 2}px`,
     [theme.breakpoints.up("sm")]: {
       width: "50%"
@@ -102,6 +106,11 @@ const styles = theme => ({
     backgroundColor: theme.palette.secondary.light,
     width: "56px",
     height: "56px"
+  },
+  searchTitle: {
+    fontWeight: 400,
+    color: "rgba(0,0,0,.75)",
+    marginTop: `${theme.spacing.unit}px`
   },
   w_icon: {
     fontSize: "40px"
