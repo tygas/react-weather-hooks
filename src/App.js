@@ -53,7 +53,8 @@ const App = () => {
     // If no saved cities, save new city and return
     if (!cityStorage) {
       cityArr = [id];
-      return localStorage.setItem("cityStorage", JSON.stringify(cityArr));
+      localStorage.setItem("cityStorage", JSON.stringify(cityArr));
+      return fetchSavedCities();
     }
     const cityStorageArr = JSON.parse(cityStorage); // Parse string containing city ids to array
     // OWM limit of 20 locations in a request
