@@ -128,8 +128,12 @@ const App = () => {
           </WeatherCard>
         </div>
       )}
+
+
+
       {message && (
-        <div>
+        <div className="center">
+          <h2>Here we want to show weather from mock</h2>
           <p>{message.message}</p>
         </div>
       )}

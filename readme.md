@@ -6,6 +6,9 @@ A simple react weather app that saves up to 20 locations. Styled with Material-U
 
 Uses the Open Weather Map API. Locations are saved in local storage.
 
+Register for API key in https://home.openweathermap.org/api_keys
+
+
 The requests to Open Weather Map's API is done through the server (for good practice to avoid exposing the API key).
 
 ### Getting started
